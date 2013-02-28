@@ -64,15 +64,14 @@ Instance composeAp {f g: Set -> Set} {P: Applicative f} {Q: Applicative g}: Appl
   ap   := fun _ _ ff fx => map2 P ap ff fx 
 }.
 Proof.
-unfold map2.
-unfold map.
-intros.
+(*identity*)
+unfold map2. unfold map. intros.
 rewrite homomorphism.
 rewrite identity'.
 rewrite identity.
 split.
-unfold map2; unfold map.
-intros.
+(*composition*)
+unfold map2; unfold map. intros.
 rewrite homomorphism.
 rewrite <- composition.
 rewrite homomorphism.
@@ -95,14 +94,14 @@ replace (fun (x : g (b -> c)) (x0 : g (a -> b)) => ap (ap (ap (pure compose) x) 
    with (fun (x : g (b -> c)) (x0 : g (a -> b)) x1 => ap x (ap x0 x1)).
 rewrite homomorphism.
 split.
-extensionality H.
-extensionality I.
-extensionality J.
+extensionality H. extensionality I. extensionality J.
 rewrite composition.
 split.
+(*homomorphism*)
 intros. unfold map2. unfold map.
 repeat rewrite homomorphism.
 split.
+(*interchange*)
 intros. unfold map2. unfold map.
 rewrite homomorphism.
 rewrite interchange'.
