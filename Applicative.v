@@ -2,7 +2,7 @@ Require Import Coq.Program.Basics.
 Require Import Coq.Program.Tactics.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Relation_Definitions.
-Require Import Coq.Setoids.Setoid
+Require Import Coq.Setoids.Setoid.
 
 Set Implicit Arguments.
 
@@ -52,6 +52,13 @@ extensionality H.
 apply identity.
 Qed.
 
+Lemma composition': forall {f: Set -> Set} {a b c} {P: Applicative f} (u: f (b -> c)) (v: f (a -> b)),
+                     ap (ap (ap (pure compose) u) v) = fun (w: f a) => ap u (ap v w).
+intros.
+extensionality H.
+apply composition.
+Qed.
+
 Instance composeAp {f g: Set -> Set} {P: Applicative f} {Q: Applicative g}: Applicative (compose f g) := {
   pure := fun _ x => pure (pure x);
   ap   := fun _ _ ff fx => map2 P ap ff fx 
@@ -67,11 +74,35 @@ split.
 unfold map2; unfold map.
 intros.
 rewrite homomorphism.
-Focus 2.
+rewrite <- composition.
+rewrite homomorphism.
+rewrite <- composition.
+repeat rewrite homomorphism.
+rewrite <- composition.
+repeat rewrite homomorphism.
+rewrite <- composition.
+rewrite <- composition.
+rewrite <- composition.
+repeat rewrite homomorphism.
+rewrite <- composition.
+repeat rewrite homomorphism.
+rewrite interchange.
+rewrite <- composition.
+rewrite homomorphism.
+unfold compose.
+fold (@compose a b c).
+replace (fun (x : g (b -> c)) (x0 : g (a -> b)) => ap (ap (ap (pure compose) x) x0))
+   with (fun (x : g (b -> c)) (x0 : g (a -> b)) x1 => ap x (ap x0 x1)).
+rewrite homomorphism.
+split.
+extensionality H.
+extensionality I.
+extensionality J.
+rewrite composition.
+split.
 intros. unfold map2. unfold map.
 repeat rewrite homomorphism.
 split.
-Focus 2.
 intros. unfold map2. unfold map.
 rewrite homomorphism.
 rewrite interchange'.
@@ -86,4 +117,4 @@ extensionality H.
 split.
 elim H.
 split.
-rewrite <- composition at 3.
+Qed.
